@@ -4,8 +4,8 @@
   "description": "Improve media (video/audio) playing in Obsidian",
   "main": "main.js",
   "scripts": {
-    "dev": "rollup --config rollup.config.js -w",
-    "build": "rollup --config rollup.config.js",
+    "dev": "sed -i '' \"s#return adapter;#return require('./adapters/http');#\" node_modules/axios/lib/defaults.js && rollup --config rollup.config.js -w",
+    "build": "sed -i '' \"s#return adapter;#return require('./adapters/http');#\" node_modules/axios/lib/defaults.js && rollup --config rollup.config.js",
     "release": "release-it"
   },
   "keywords": [],
@@ -15,10 +15,12 @@
     "@release-it/bumper": "^2.0.0",
     "@release-it/conventional-changelog": "^2.0.1",
     "@rollup/plugin-commonjs": "^15.1.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
     "@types/node": "^14.14.2",
     "assert-never": "^1.2.1",
+    "axios": "^0.21.1",
     "cz-conventional-changelog": "^3.3.0",
     "obsidian": "https://github.com/obsidianmd/obsidian-api/tarball/master",
     "plyr": "^3.6.4",
