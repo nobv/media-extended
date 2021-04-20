@@ -5,11 +5,13 @@ import {
   processExternalEmbeds,
   processInternalLinks,
 } from "./processor";
-// import Plyr from "plyr"
+import { Express } from "express";
+import { getServer } from "fake-bili";
 
 export default class MediaExtended extends Plugin {
   settings: MxSettings = DEFAULT_SETTINGS;
-  // player = Plyr;
+
+  server: Express | undefined;
 
   async loadSettings() {
     Object.assign(this.settings, await this.loadData());
@@ -21,6 +23,9 @@ export default class MediaExtended extends Plugin {
 
   async onload(): Promise<void> {
     console.log("loading media-extended");
+
+    this.server = getServer(2233);
+    this.server.listen(2233);
 
     await this.loadSettings();
 
