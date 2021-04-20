@@ -5,12 +5,14 @@ export interface MxSettings {
   mediaFragmentsEmbed: boolean;
   timestampLink: boolean;
   extendedImageEmbedSyntax: boolean;
+  interalBiliPlayback: boolean;
 }
 
 export const DEFAULT_SETTINGS: MxSettings = {
   mediaFragmentsEmbed: true,
   timestampLink: false,
   extendedImageEmbedSyntax: false,
+  interalBiliPlayback: false,
 };
 
 export class MESettingTab extends PluginSettingTab {
@@ -70,6 +72,21 @@ export class MESettingTab extends PluginSettingTab {
           );
           descEl.createEl('br');
           descEl.appendText("Restart the app to take effects");
+        })
+      },
+      {
+        k: "interalBiliPlayback",
+        name: "Play bilibili video with local player",
+        desc: createFragment(descEl => {
+          descEl.appendText(
+            "在本地播放Bilibili视频，替代嵌入式iframe播放器，支持播放1080p视频"
+          );
+          descEl.createEl('br');
+          descEl.appendText(
+            "bilibili视频的时间戳功能需要开启该功能"
+          );
+          descEl.createEl('br');
+          descEl.appendText("重启Obsidian生效");
         })
       },
     ];

@@ -5,13 +5,13 @@ import {
   processExternalEmbeds,
   processInternalLinks,
 } from "./processor";
-import { Express } from "express";
+import { Server } from "node:http";
 import { getServer } from "fake-bili";
 
 export default class MediaExtended extends Plugin {
   settings: MxSettings = DEFAULT_SETTINGS;
 
-  server: Express | undefined;
+  server: Server | undefined;
 
   async loadSettings() {
     Object.assign(this.settings, await this.loadData());
@@ -24,9 +24,6 @@ export default class MediaExtended extends Plugin {
   async onload(): Promise<void> {
     console.log("loading media-extended");
 
-    this.server = getServer(2233);
-    this.server.listen(2233);
-
     await this.loadSettings();
 
     this.addSettingTab(new MESettingTab(this.app, this));
@@ -38,7 +35,12 @@ export default class MediaExtended extends Plugin {
       this.registerMarkdownPostProcessor(processInternalLinks.bind(this));
     }
     if (this.settings.extendedImageEmbedSyntax) {
+      // additional process for bili required
       this.registerMarkdownPostProcessor(processExternalEmbeds);
+    }
+    if (this.settings.interalBiliPlayback) {
+      this.server = getServer(2233);
+      // additional process for bili required
     }
 
     // this.registerMarkdownPostProcessor(processVideoPlayer.bind(this));
@@ -46,6 +48,7 @@ export default class MediaExtended extends Plugin {
 
   onunload() {
     console.log("unloading media-extended");
+    this.server?.close();
   }
 }
 
