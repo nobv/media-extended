@@ -24,6 +24,7 @@
     "axios": "^0.21.1",
     "bili-api": "github:AidenLx/bili-api",
     "cz-conventional-changelog": "^3.3.0",
+    "dashjs": "^3.2.2",
     "express": "^4.17.1",
     "http-proxy-middleware": "^1.2.0",
     "obsidian": "https://github.com/obsidianmd/obsidian-api/tarball/master",

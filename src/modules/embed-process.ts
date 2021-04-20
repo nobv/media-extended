@@ -3,6 +3,7 @@ import { assertNever } from "assert-never";
 import { stringify, parse } from "query-string";
 import { parseLinktext } from "obsidian";
 import Plyr from "plyr"
+import * as dashjs from 'dashjs'
 
 enum Host {
   YouTube,
@@ -25,6 +26,7 @@ export function getEmbedInfo(src: URL): videoInfo | null {
         if (/^bv/i.test(videoId)) {
           queryStr = `?bvid=${videoId}`;
         } else if (/^av/i.test(videoId)) {
+          videoId = videoId.substring(2);
           queryStr = `?aid=${videoId}`;
         } else {
           console.log(`invaild video id: ${videoId}`);
@@ -113,11 +115,12 @@ export function getEmbedFrom(url:URL): HTMLDivElement | null {
     },
   }); 
 
-  const container = createDiv(undefined, (el) => el.appendChild(iframe));
+  
 
   switch (info.host) {
     case Host.YouTube:
     case Host.Vimeo: {
+      const container = createDiv(undefined, (el) => el.appendChild(iframe));
       const timeSpan = parseTF(url.hash);
       const isLoop = parse(url.hash).loop === null;
 
@@ -134,7 +137,7 @@ export function getEmbedFrom(url:URL): HTMLDivElement | null {
       Plyr.timeSpan = null;
       const player = new Plyr(container, {
         fullscreen: { enabled: false },
-        loop: { active: parse(url.hash).loop === null },
+        loop: { active: isLoop },
         invertTime: false,
         youtube: ytOpt,
       }) as Plyr_TF;
@@ -144,7 +147,32 @@ export function getEmbedFrom(url:URL): HTMLDivElement | null {
       return container;
     }
     case Host.Bilibili: {
-      container.addClass("bili-embed");
+      const videoTag = createEl('video');
+      const container = createDiv(undefined, (el) => el.appendChild(videoTag));
+
+      const timeSpan = parseTF(url.hash);
+      const isLoop = parse(url.hash).loop === null;
+      const dash = dashjs.MediaPlayer().create();
+
+      const src = "http://localhost:2233/geturl/"+(info.iframe.searchParams.has('aid') ? "av"+info.id : info.id);
+      
+
+      // @ts-ignore
+      Plyr.timeSpan = null;
+      const player = new Plyr(videoTag, {
+        fullscreen: { enabled: false },
+        loop: { active: isLoop },
+        invertTime: false,
+      }) as Plyr_TF;
+      dash.initialize(videoTag, src,false);
+      
+      if (timeSpan){
+        player.on("ready", function () {
+          this.currentTime = timeSpan.start;
+        });
+        injectTimestamp(player, timeSpan);
+      }
+
       return container;
     }
     default:
